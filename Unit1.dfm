@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 310
   BorderStyle = bsDialog
   Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1073#1072#1079#1099' '#1076#1072#1085#1085#1099#1093
-  ClientHeight = 347
+  ClientHeight = 308
   ClientWidth = 768
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,19 +18,19 @@ object Form1: TForm1
   TextHeight = 16
   object ps: TcxProgressBar
     Left = 0
-    Top = 323
+    Top = 284
     Align = alBottom
     TabOrder = 0
     Width = 768
   end
   object cxLabel1: TcxLabel
     Left = 0
-    Top = 303
+    Top = 264
     Align = alBottom
   end
   object cxButton1: TcxButton
     Left = 136
-    Top = 80
+    Top = 112
     Width = 249
     Height = 57
     Caption = #1057#1082#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077
@@ -74,6 +74,14 @@ object Form1: TForm1
     TabOrder = 6
     Text = 'C:\Program Files (x86)\ENT\Server\DB\CBASE.FDB'
     Width = 609
+  end
+  object cbFoto: TcxCheckBox
+    Left = 132
+    Top = 80
+    Caption = #1050#1086#1087#1080#1088#1086#1074#1072#1090#1100' '#1080#1079#1086#1073#1088#1072#1078#1077#1085#1080#1103
+    State = cbsChecked
+    TabOrder = 7
+    Width = 333
   end
   object FDB_data_old: TIBDatabase
     IdleTimer = 0

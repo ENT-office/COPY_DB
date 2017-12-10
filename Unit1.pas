@@ -10,7 +10,8 @@ uses
   cxEdit, cxDBData, cxGridLevel, cxClasses, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   IBCustomDataSet, IBQuery, StdCtrls, IBTable, cxContainer, cxLabel,
-  cxProgressBar, Menus, cxButtons, cxTextEdit, cxMaskEdit, cxButtonEdit;
+  cxProgressBar, Menus, cxButtons, cxTextEdit, cxMaskEdit, cxButtonEdit,
+  cxCheckBox;
 
 type
   TForm1 = class(TForm)
@@ -35,6 +36,7 @@ type
     cxLabel3: TcxLabel;
     dbPath_NEW: TcxButtonEdit;
     OpenDialog1: TOpenDialog;
+    cbFoto: TcxCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure cxButton1Click(Sender: TObject);
     procedure dbPath_oldPropertiesButtonClick(Sender: TObject;
@@ -225,14 +227,18 @@ begin
       then exit;
 
   FDBConnect(FDB_data_old,TB_data_old,'WIN1251','SYSDBA','masterkey',dbPath_data_old);
-  FDBConnect(FDB_photo_old,TB_photo_old,'WIN1251','SYSDBA','masterkey',dbPath_photo_old);
   FDBConnect(FDB_data_NEW,TB_data_NEW,'WIN1251','SYSDBA','masterkey',dbPath_data_NEW);
-  FDBConnect(FDB_photo_NEW,TB_photo_NEW,'WIN1251','SYSDBA','masterkey',dbPath_photo_NEW);
+  if cbFoto.Checked then
+  begin
+    FDBConnect(FDB_photo_old,TB_photo_old,'WIN1251','SYSDBA','masterkey',dbPath_photo_old);
+    FDBConnect(FDB_photo_NEW,TB_photo_NEW,'WIN1251','SYSDBA','masterkey',dbPath_photo_NEW);
+    pQueryExecSQL(q_photo_NEW,'delete from UPH');
+  end;
 
 
 
 
-  pQueryExecSQL(q_photo_NEW,'delete from UPH');
+
   pQueryExecSQL(q_data_NEW,'delete from FB_USR');
   pQueryExecSQL(q_data_NEW,'delete from FB_KEY');
 
@@ -367,28 +373,31 @@ begin
     q_data_Old.Next;
   end;
 
-  cxLabel1.Caption := 'Загружаем фото';
-  pQueryOpen(q_photo_Old,'select * FROM UPH');
-  q_photo_Old.First;
-  while not q_photo_Old.Eof do
+  if cbFoto.Checked then
   begin
-    DirImage := extractfiledir(application.ExeName) + '\img\';
-    FloadImageFIREBIRDServer (DirImage, q_photo_Old.FieldByName('USERID').AsString + '.bmp', q_photo_Old);
-    ImBMP := DirImage + q_photo_Old.FieldByName('USERID').AsString + '.bmp';
-    ImJpg := DirImage + q_photo_Old.FieldByName('USERID').AsString + '.jpg';
-    BMPtoJPG(ImBMP, ImJpg);
+    cxLabel1.Caption := 'Загружаем фото';
+    pQueryOpen(q_photo_Old,'select * FROM UPH');
+    q_photo_Old.First;
+    while not q_photo_Old.Eof do
+    begin
+      DirImage := extractfiledir(application.ExeName) + '\img\';
+      FloadImageFIREBIRDServer (DirImage, q_photo_Old.FieldByName('USERID').AsString + '.bmp', q_photo_Old);
+      ImBMP := DirImage + q_photo_Old.FieldByName('USERID').AsString + '.bmp';
+      ImJpg := DirImage + q_photo_Old.FieldByName('USERID').AsString + '.jpg';
+      BMPtoJPG(ImBMP, ImJpg);
 
-      IBTblImage.Insert;
-      IBTblImage.FieldByName('USERID').AsString := q_photo_Old.FieldByName('USERID').AsString;
-      TBlobField(IBTblImage.FieldByName('PHOTO')).LoadFromFile(ImJpg);
-      IBTblImage.Post;
+        IBTblImage.Insert;
+        IBTblImage.FieldByName('USERID').AsString := q_photo_Old.FieldByName('USERID').AsString;
+        TBlobField(IBTblImage.FieldByName('PHOTO')).LoadFromFile(ImJpg);
+        IBTblImage.Post;
 
-      DeleteFile(ImBMP);
-      DeleteFile(ImJpg);
+        DeleteFile(ImBMP);
+        DeleteFile(ImJpg);
 
-    ps.Position := q_photo_Old.RecNo *100/q_photo_Old.RecordCount;
-    application.ProcessMessages;
-    q_photo_Old.Next;
+      ps.Position := q_photo_Old.RecNo *100/q_photo_Old.RecordCount;
+      application.ProcessMessages;
+      q_photo_Old.Next;
+    end;
   end;
 
 
